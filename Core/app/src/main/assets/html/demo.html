@@ -1,0 +1,32 @@
+<html>
+<head>
+    <title>JsBridge范例</title>
+</head>
+<script>
+    function log(level, arg) {
+        if (level == 0) {
+            jsApi.log.d({
+                tag : 'wsy',
+                msg : arg
+            })
+        } else if (level == 1) {
+            jsApi.log.i({
+                tag : 'cmf',
+                msg : arg
+            })
+        }
+    }
+</script>
+<body>
+<button onclick="alert('Hello World!')" title="alert()">alert()</button>
+<br/>
+<button onclick="confirm('Are You Sure?')" title="confirm()">confirm()</button>
+<br/>
+<button onclick="prompt('What You Name?', 'Klavor Lee')" title="prompt()">prompt()</button>
+<br/>
+<button onclick="log(0,'Hello World!')" title="log(0)">log(0)</button>
+<br/>
+<button onclick="log(1,'This is a test!')" title="log(1)">log(1)</button>
+<br/>
+</body>
+</html>
