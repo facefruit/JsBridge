@@ -1,16 +1,33 @@
 window.jsBridge = {
-    run : function(host, path, arg) {
-        location.href = "jsBridge://" + host + "/" + path + "?params=" + JSON.stringify(arg)
+    run : function(host, path, arg, id) {
+        location.href = "jsBridge://" + host + "/" + path + "?params=" + JSON.stringify(arg) + "&id=" + id;
+    },
+
+    doJs : function(host, path, arg) {
+        var id = window.callback.add(function(rtn, err) {
+            if (rtn.status == 0) {
+                arg.cancel(rtn);
+            } else if (rtn.status == -1) {
+                arg.error(rtn, err);
+            } else if (rtn.status == 1) {
+                arg.success(rtn);
+            }
+        })
+        this.run(host, path, arg, id);
     }
 }
 
-window.api = {
-    log : {
-        d : function(arg) {
-            jsBridge.run('log', 'd', arg)
-        },
-        i : function(arg) {
-            jsBridge.run('log', 'i', arg)
+window.callback = {
+    list : {},
+    id : 1,
+    add : function(arg) {
+        this.list[this.id] = arg;
+        return this.id++;
+    },
+    cb : function(id, rtn, err, del) {
+        this.list[id] && this.list[id](rtn, err);
+        if (del) {
+            delete this.list[id];
         }
     }
 }

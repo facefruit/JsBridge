@@ -1,37 +1,50 @@
-package com.klavor.browser;
+package com.klavor.browser.jsbridge;
 
+import android.content.Context;
+import android.content.res.AssetManager;
 import android.util.Log;
-import android.webkit.WebView;
 
-import com.klavor.browser.jsbridge.JsExcutor;
+import com.klavor.browser.WebViewProxy;
+import com.klavor.browser.annotation.JsMehod;
 import com.klavor.browser.jsbridge.api.JsApi;
 import com.klavor.browser.jsbridge.api.JsApiMapping;
 
+import java.io.IOException;
+import java.io.InputStream;
 import java.lang.reflect.Method;
 import java.util.HashMap;
 import java.util.Set;
 
-public class JsBridge {
+public class JsInject {
     private static String javascript;
 
-    public static void inject(WebView view) {
+    public static void inject(WebViewProxy webViewProxy) {
         if (javascript == null) {
-            synchronized (JsBridge.class) {
+            synchronized (JsInject.class) {
                 if (javascript == null) {
-                    javascript = buildJavascript();
+                    javascript = buildJavascript(webViewProxy);
                 }
             }
         }
-        JsExcutor.excuteJs(view, javascript);
+        webViewProxy.excute(javascript);
     }
 
-    private static String buildJavascript() {
+    private static String buildJavascript(WebViewProxy webViewProxy) {
+        Context context = webViewProxy.getContext();
         StringBuffer sb = new StringBuffer();
-        sb.append("window.jsBridge = {\n" +
-                "    run : function(host, path, arg) {\n" +
-                "        location.href = \"jsBridge://\" + host + \"/\" + path + \"?params=\" + JSON.stringify(arg)\n" +
-                "    }\n" +
-                "}\n");
+
+        InputStream is = null;  //获得AssetManger 对象, 调用其open 方法取得  对应的inputStream对象
+        try {
+            AssetManager assets = context.getAssets();
+            is = assets.open("js/jsBridge.js");
+            int size = is.available();  //取得数据流的数据大小
+            byte[] bytes = new byte[size];
+            is.read(bytes);
+            is.close();
+            sb.append(new String(bytes));
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
 
         HashMap<String, Class<? extends JsApi>> apiMapping = JsApiMapping.getApiMapping();
         Set<String> keySet = apiMapping.keySet();
@@ -45,7 +58,7 @@ public class JsBridge {
                     boolean annotationPresent = method.isAnnotationPresent(JsMehod.class);
                     if (annotationPresent) {
                         sb.append(method.getName()).append(":function(arg){");
-                        sb.append("jsBridge.run('" + key + "', '" + method.getName() + "', arg)");
+                        sb.append("jsBridge.doJs('" + key + "', '" + method.getName() + "', arg)");
                         sb.append("},");
                     }
                 }

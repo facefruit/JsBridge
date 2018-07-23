@@ -3,8 +3,9 @@ package com.klavor.browser.intercept;
 import android.net.Uri;
 import android.util.Log;
 
-import com.klavor.browser.JsMehod;
-import com.klavor.browser.jsbridge.JsObject;
+import com.klavor.browser.annotation.JsMehod;
+import com.klavor.browser.WebViewProxy;
+import com.klavor.browser.jsbridge.JsContext;
 import com.klavor.browser.jsbridge.api.JsApi;
 import com.klavor.browser.jsbridge.api.JsApiMapping;
 
@@ -19,7 +20,7 @@ public class JsIntercept extends SimpleIntercept {
     private static final String JS_BRIDGE = "jsBridge";
 
     @Override
-    public void intercept(String url) {
+    public void intercept(WebViewProxy webViewProxy, String url) {
         Log.d("cmf", "intercept()");
         Uri uri = Uri.parse(url);
         HashMap<String, Class<? extends JsApi>> apiMapping = JsApiMapping.getApiMapping();
@@ -29,14 +30,20 @@ public class JsIntercept extends SimpleIntercept {
         if (pathSegments != null && pathSegments.size() > 0) {
             for (String key : keySet) {
                 if (key.equalsIgnoreCase(host)) {
-                    Log.d("cmf", "准备执行！");
                     Class<? extends JsApi> clazz = apiMapping.get(key);
                     try {
                         Constructor<? extends JsApi> constructor = clazz.getConstructor();
                         JsApi jsApi = constructor.newInstance();
-                        Method method = clazz.getDeclaredMethod(pathSegments.get(0), JsObject.class);
+                        Method method = clazz.getDeclaredMethod(pathSegments.get(0), JsContext.class);
                         if (method.isAnnotationPresent(JsMehod.class)) {
-                            method.invoke(jsApi, new JsObject(null, uri.getQueryParameter("params")));
+                            Integer id = null;
+                            try {
+                                id = Integer.valueOf(uri.getQueryParameter("id"));
+                            } catch (NumberFormatException e) {
+                                e.printStackTrace();
+                            }
+                            JsContext jsContext = new JsContext(webViewProxy, uri.getQueryParameter("params"), id);
+                            method.invoke(jsApi, jsContext);
                         }
                     } catch (NoSuchMethodException e) {
                         e.printStackTrace();

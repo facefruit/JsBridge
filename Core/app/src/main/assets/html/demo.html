@@ -16,6 +16,23 @@
             })
         }
     }
+    function show() {
+        jsApi.dialog.show({
+            title : "警告",
+            message : "请不要点击取消!",
+            positive : "知道了",
+            negative : "我就要",
+            success : function(arg) {
+                alert(arg.msg);
+            },
+            cancel : function(arg) {
+                alert(arg.msg);
+            },
+            error : function(arg, err) {
+                alert(err);
+            }
+        })
+    }
 </script>
 <body>
 <button onclick="alert('Hello World!')" title="alert()">alert()</button>
@@ -27,6 +44,8 @@
 <button onclick="log(0,'Hello World!')" title="log(0)">log(0)</button>
 <br/>
 <button onclick="log(1,'This is a test!')" title="log(1)">log(1)</button>
+<br/>
+<button onclick="show()" title="show()">show()</button>
 <br/>
 </body>
 </html>
