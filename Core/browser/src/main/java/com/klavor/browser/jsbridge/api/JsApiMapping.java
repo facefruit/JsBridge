@@ -24,5 +24,6 @@ public class JsApiMapping {
     private static void buildMapping() {
         mApiMapping.put("log", LogJsApi.class);
         mApiMapping.put("dialog", DialogJsApi.class);
+        mApiMapping.put("nativeJs", NativeJsApi.class);
     }
 }

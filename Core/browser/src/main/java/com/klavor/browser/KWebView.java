@@ -6,6 +6,8 @@ import android.webkit.WebSettings;
 import android.webkit.WebView;
 
 import com.klavor.browser.intercept.JsIntercept;
+import com.klavor.browser.jsbridge.JsContext;
+import com.klavor.browser.intf.NativeCallback;
 
 public class KWebView extends WebView {
     private WebViewProxy mWebViewProxy;
@@ -52,5 +54,14 @@ public class KWebView extends WebView {
 
     public void excuteJs(String js) {
         mWebViewProxy.excute(js);
+    }
+
+    public void nativeJs(String funName, JsContext jsContext, NativeCallback nativeCallback) {
+        mWebViewProxy.nativeJs(funName, jsContext, nativeCallback);
+    }
+
+    public WebViewProxy getWebViewProxy() {
+        WebViewProxy webViewProxy = mWebViewProxy;
+        return webViewProxy;
     }
 }

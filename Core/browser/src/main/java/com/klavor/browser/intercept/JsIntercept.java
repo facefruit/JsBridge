@@ -3,7 +3,7 @@ package com.klavor.browser.intercept;
 import android.net.Uri;
 import android.util.Log;
 
-import com.klavor.browser.annotation.JsMehod;
+import com.klavor.browser.annotation.JsAnnotation;
 import com.klavor.browser.WebViewProxy;
 import com.klavor.browser.jsbridge.JsContext;
 import com.klavor.browser.jsbridge.api.JsApi;
@@ -35,7 +35,7 @@ public class JsIntercept extends SimpleIntercept {
                         Constructor<? extends JsApi> constructor = clazz.getConstructor();
                         JsApi jsApi = constructor.newInstance();
                         Method method = clazz.getDeclaredMethod(pathSegments.get(0), JsContext.class);
-                        if (method.isAnnotationPresent(JsMehod.class)) {
+                        if (method.isAnnotationPresent(JsAnnotation.class)) {
                             Integer id = null;
                             try {
                                 id = Integer.valueOf(uri.getQueryParameter("id"));

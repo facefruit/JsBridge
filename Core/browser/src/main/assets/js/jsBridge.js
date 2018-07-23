@@ -14,6 +14,10 @@ window.jsBridge = {
             }
         })
         this.run(host, path, arg, id);
+    },
+
+    doJsNcb : function (host, path, arg, id) {
+        this.run(host, path, arg, id);
     }
 }
 
@@ -31,3 +35,16 @@ window.callback = {
         }
     }
 }
+
+window.nativeJs = {
+    callback : function(id, rtn, status) {
+        if (status == 0) {
+            jsBridge.doJsNcb("nativejs", "cancel", rtn, id)
+        } else if (status == -1) {
+            jsBridge.doJsNcb("nativejs", "error", rtn, id)
+        } else if (status == 1) {
+            jsBridge.doJsNcb("nativejs", "success", rtn, id)
+        }
+    }
+}
+

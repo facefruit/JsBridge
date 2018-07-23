@@ -5,7 +5,7 @@ import android.content.res.AssetManager;
 import android.util.Log;
 
 import com.klavor.browser.WebViewProxy;
-import com.klavor.browser.annotation.JsMehod;
+import com.klavor.browser.annotation.JsAnnotation;
 import com.klavor.browser.jsbridge.api.JsApi;
 import com.klavor.browser.jsbridge.api.JsApiMapping;
 
@@ -55,7 +55,7 @@ public class JsInject {
             Method[] declaredMethods = clazz.getDeclaredMethods();
             if (declaredMethods != null) {
                 for (Method method : declaredMethods) {
-                    boolean annotationPresent = method.isAnnotationPresent(JsMehod.class);
+                    boolean annotationPresent = method.isAnnotationPresent(JsAnnotation.class);
                     if (annotationPresent) {
                         sb.append(method.getName()).append(":function(arg){");
                         sb.append("jsBridge.doJs('" + key + "', '" + method.getName() + "', arg)");

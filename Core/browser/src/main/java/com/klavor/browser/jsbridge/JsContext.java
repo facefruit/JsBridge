@@ -17,11 +17,19 @@ public class JsContext implements JsCallbackStatus {
     private int id;
     private JSONObject mJsonObject;
 
+    public JsContext(WebViewProxy proxy) {
+        this(proxy, null, 0);
+    }
+
     public JsContext(WebViewProxy proxy, String arg, int id) {
         this.mWebViewProxy = proxy;
         this.mArg = arg;
         this.id = id;
         mJsonObject = getJsonObject();
+    }
+
+    public int getId() {
+        return id;
     }
 
     public Context getContext() {
