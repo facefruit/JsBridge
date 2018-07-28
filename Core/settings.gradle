@@ -1,1 +1,1 @@
-include ':app', ':browser'
+include ':app', ':browser', ':browser-v2'
